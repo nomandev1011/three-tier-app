@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: node
+spec:
+  replicas: {{.Values.node.replicaCount}}
+  selector:
+    matchLabels:
+      app: node
+  template:
+    metadata:
+      labels:
+        app: node
+    spec:
+      containers:
+      - name: node
+        image: {{.Values.node.image.repository}}:{{.Values.node.image.tag}}
+        imagePullPolicy: {{.Values.node.image.imagePullPolicy}}
+        ports:
+        - containerPort: {{ .Values.node.service.port }}
+
+        # 1. Liveness Probe Configuration
+        livenessProbe:
+          httpGet:
+            path: /ok
+            port: {{ .Values.node.service.port }}
+          initialDelaySeconds: 15  
+          periodSeconds: 10       
+
+        # 2. Readiness Probe Configuration
+        readinessProbe:
+          httpGet:
+            path: /ok
+            port: {{ .Values.node.service.port }}
+          initialDelaySeconds: 5  
+          periodSeconds: 5        
+          failureThreshold: 2 
+
+        resources:
+          requests:
+            cpu: {{ .Values.node.resources.requests.cpu }}
+            memory: {{ .Values.node.resources.requests.memory }}
+          limits:
+             cpu: {{ .Values.node.resources.limits.cpu }}
+             memory: {{ .Values.node.resources.limits.memory }}   
+        env:
+            - name: USE_DB_AUTH
+              value: "{{ .Values.node.env.USE_DB_AUTH }}"
+            - name: PORT
+              value: "{{ .Values.node.env.PORT }}"
+            - name: MONGO_CONN_STR
+              value: "{{ .Values.node.env.MONGO_CONN_STR }}" 
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name }}
+                  key: username
+
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name }}
+                  key: password
+
+          
