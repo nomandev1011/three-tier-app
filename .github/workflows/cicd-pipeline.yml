@@ -1,0 +1,20 @@
+name: Three Tier CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the frontend image
+        run: docker build Application-Code/frontend/ --file Application-Code/frontend/Dockerfile --tag nomandev1011/three-tier-frontend
+
+      - name: Build the backend image
+        run: docker build Application-Code/backend/ --file Application-Code/backend/Dockerfile --tag nomandev1011/three-tier-backend
