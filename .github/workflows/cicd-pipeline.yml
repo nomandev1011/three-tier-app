@@ -18,3 +18,11 @@ jobs:
 
       - name: Build the backend image
         run: docker build Application-Code/backend/ --file Application-Code/backend/Dockerfile --tag nomandev1011/three-tier-backend
+     
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Validate Helm Chart
+        run: |
+          helm lint ./three-tier-app
+          helm template ./three-tier-app
