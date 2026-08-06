@@ -56,12 +56,12 @@ jobs:
       # Push Frontend Image
       - name: Push Frontend Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/three-tier-frontend:latest
+          docker push nomandev1011/three-tier-frontend:latest
 
       # Push Backend Image
       - name: Push Backend Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/three-tier-backend:latest
+          docker push nomandev1011/three-tier-backend:latest
 
       # Install kubectl
       - name: Install kubectl
