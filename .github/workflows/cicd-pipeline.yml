@@ -10,10 +10,8 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
-    
-  
 
     steps:
       # Checkout Repository
@@ -24,17 +22,17 @@ jobs:
       - name: Build Frontend Image
         run: |
           docker build \
-          -t nomandev1011/three-tier-frontend:latest \
-          -f Application-Code/frontend/Dockerfile \
-          Application-Code/frontend
+            -t nomandev1011/three-tier-frontend:latest \
+            -f Application-Code/frontend/Dockerfile \
+            Application-Code/frontend
 
       # Build Backend Image
       - name: Build Backend Image
         run: |
           docker build \
-          -t nomandev1011/three-tier-backend:latest \
-          -f Application-Code/backend/Dockerfile \
-          Application-Code/backend
+            -t nomandev1011/three-tier-backend:latest \
+            -f Application-Code/backend/Dockerfile \
+            Application-Code/backend
 
       # Install Helm
       - name: Install Helm
@@ -56,32 +54,9 @@ jobs:
       # Push Frontend Image
       - name: Push Frontend Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/three-tier-frontend:latest
+          docker push nomandev1011/three-tier-frontend:latest
 
       # Push Backend Image
       - name: Push Backend Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/three-tier-backend:latest
-
-      # Install kubectl
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v4
-
-      # Configure kubeconfig
-      - name: Configure kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
-
-      # Verify Kubernetes Cluster
-      - name: Verify Kubernetes Cluster
-        run: |
-          kubectl cluster-info
-          kubectl get nodes
-
-      # Deploy Helm Chart
-      - name: Deploy Application
-        run: |
-          helm upgrade --install three-tier-app ./three-tier-app \
-            --namespace three-tier-namespace \
-            --create-namespace
+          docker push nomandev1011/three-tier-backend:latest
